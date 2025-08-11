@@ -41,7 +41,7 @@ services:
       - pgapp
 
   temporal-ui:
-    image: temporalio/ui:2.28
+    image: temporalio/ui:latest
     environment:
       - TEMPORAL_ADDRESS=temporal:7233
     ports:
