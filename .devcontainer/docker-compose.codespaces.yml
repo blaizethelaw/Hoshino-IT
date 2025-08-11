@@ -7,48 +7,43 @@ services:
       - ..:/workspaces:cached
     networks:
       - default
-    depends_on:
-      - pgapp
-      - redis
-      - temporal
-      - temporal-ui
+    # Uncomment and use only when needed
+    # depends_on:
+    #   - pg
+    #   - redis
+    #   - temporal
+    #   - temporal-ui
+    # ports:
+    #   - "3000:3000"
 
-  pgapp:
-    image: postgres:16
-    environment:
-      POSTGRES_DB: catalyst
-      POSTGRES_USER: catalyst
-      POSTGRES_PASSWORD: catalyst
-    ports:
-      - "5432:5432"
+  # Optional local infra (disabled until used)
+  # pg:
+  #   image: postgres:16
+  #   environment:
+  #     POSTGRES_USER: dev
+  #     POSTGRES_PASSWORD: dev
+  #     POSTGRES_DB: devdb
+  #   ports:
+  #     - "5432:5432"
 
-  redis:
-    image: redis:7
-    ports:
-      - "6379:6379"
+  # redis:
+  #   image: redis:7
+  #   ports:
+  #     - "6379:6379"
 
-  temporal:
-    image: temporalio/auto-setup:1.23
-    depends_on:
-      - pgapp
-    environment:
-      DB: postgresql
-      DB_HOST: pgapp
-      DB_PORT: "5432"
-      DB_USER: catalyst
-      DB_PASSWORD: catalyst
-      DB_NAME: catalyst
-    ports:
-      - "7233:7233"
+  # temporal:
+  #   image: temporalio/auto-setup:1.24
+  #   environment:
+  #     - DB=postgresql
+  #   ports:
+  #     - "7233:7233"
 
-  temporal-ui:
-    image: temporalio/ui:latest
-    depends_on:
-      - temporal
-    environment:
-      TEMPORAL_ADDRESS: temporal:7233
-    ports:
-      - "8080:8080"
+  # temporal-ui:
+  #   image: temporalio/ui:latest
+  #   environment:
+  #     - TEMPORAL_ADDRESS=temporal:7233
+  #   ports:
+  #     - "8080:8080"
 
 networks:
   default:
