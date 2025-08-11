@@ -3,48 +3,81 @@ version: "3.8"
 services:
   app:
     image: mcr.microsoft.com/devcontainers/typescript-node:1-22-bullseye
+    command: ["sleep", "infinity"]
     volumes:
-      - ..:/workspaces/${COMPOSE_PROJECT_NAME}:cached
-    command: sleep infinity
+      - ..:/workspaces:cached
     depends_on:
-      - pgapp
-      - redis
-      - temporal
-      - temporal-ui
+      pgapp:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      temporal:
+        condition: service_healthy
+    networks:
+      - default
 
   pgapp:
     image: postgres:16
     environment:
+      POSTGRES_DB: catalyst
       POSTGRES_USER: catalyst
       POSTGRES_PASSWORD: catalyst
-      POSTGRES_DB: catalyst
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U catalyst"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - default
     ports:
       - "5432:5432"
 
   redis:
     image: redis:7
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - default
     ports:
       - "6379:6379"
 
   temporal:
-    image: temporalio/auto-setup:latest
+    image: temporalio/auto-setup:1.23
     environment:
-      - DB=postgresql
-      - DB_HOST=pgapp
-      - DB_PORT=5432
-      - DB_USER=catalyst
-      - DB_PASSWORD=catalyst
-      - DB_NAME=catalyst
+      DB: postgresql
+      DB_HOST: pgapp
+      DB_NAME: catalyst
+      DB_PASSWORD: catalyst
+      DB_PORT: "5432"
+      DB_USER: catalyst
+    depends_on:
+      pgapp:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7233"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+    networks:
+      - default
     ports:
       - "7233:7233"
-    depends_on:
-      - pgapp
 
   temporal-ui:
     image: temporalio/ui:latest
     environment:
-      - TEMPORAL_ADDRESS=temporal:7233
+      TEMPORAL_ADDRESS: temporal:7233
+    depends_on:
+      temporal:
+        condition: service_healthy
+    networks:
+      - default
     ports:
       - "8080:8080"
-    depends_on:
-      - temporal
+
+networks:
+  default:
+    driver: bridge
