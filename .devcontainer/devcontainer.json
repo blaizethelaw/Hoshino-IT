@@ -6,8 +6,9 @@
   "features": {
     "ghcr.io/devcontainers/features/node:1": { "version": "22" },
     "ghcr.io/devcontainers/features/github-cli:1": {},
-    "ghcr.io/devcontainers/features/pnpm:1": { "version": "9" }
-  },
+    "ghcr.io/devcontainers/features/pnpm:latest": {}
+}
+,
   "forwardPorts": [3000, 3001, 4000, 8080],
   "postCreateCommand": "corepack enable && corepack prepare pnpm@9 --activate"
 }
