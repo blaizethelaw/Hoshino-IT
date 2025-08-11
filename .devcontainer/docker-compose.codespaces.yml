@@ -27,7 +27,7 @@ services:
       - "6379:6379"
 
   temporal:
-    image: temporalio/auto-setup:1.23
+    image: temporalio/auto-setup:latest
     environment:
       - DB=postgresql
       - DB_HOST=pgapp
