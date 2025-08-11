@@ -1,37 +1,49 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
-echo "🚀 Starting inline bootstrap process..."
+printf "\n🚀 Bootstrap: creating minimal monorepo skeleton...\n\n"
 
-# Avoid nested repo issues
-if [ -d "catalyst-itsm/.git" ]; then
-  rm -rf catalyst-itsm/.git
-fi
+ROOT="catalyst-itsm"
+mkdir -p "$ROOT/apps/portal"
 
-# Scaffold directories (simulate bootstrap.sh logic)
-mkdir -p catalyst-itsm/apps/{portal,agent,api,worker}
-mkdir -p catalyst-itsm/packages/{ui,utils,types,sdk}
-
-# Add placeholder package.json
-cat <<EOL > catalyst-itsm/package.json
+cat > "$ROOT/package.json" <<'JSON'
 {
   "name": "catalyst-itsm",
   "private": true,
-  "workspaces": ["apps/*", "packages/*"],
-  "devDependencies": {}
+  "packageManager": "pnpm@9",
+  "scripts": {
+    "dev": "pnpm -r --parallel dev",
+    "build": "echo no-build",
+    "lint": "echo no-lint"
+  }
 }
-EOL
+JSON
 
-# Touch docker-compose.yml
-cat <<EOL > catalyst-itsm/docker-compose.yml
-version: "3.8"
-services:
-  example:
-    image: hello-world
-EOL
+cat > "$ROOT/pnpm-workspace.yaml" <<'YAML'
+packages:
+  - "apps/*"
+YAML
 
-echo "📦 Installing dependencies..."
-cd catalyst-itsm
-pnpm install
+cat > "$ROOT/apps/portal/package.json" <<'JSON'
+{
+  "name": "@catalyst/apps-portal",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js"
+  },
+  "dependencies": {}
+}
+JSON
 
-echo "✅ Bootstrap complete."
+cat > "$ROOT/apps/portal/server.js" <<'JS'
+import http from 'node:http';
+const PORT = process.env.PORT || 3000;
+http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.end('Portal dev server is up ✅\n');
+}).listen(PORT, () => console.log(`http://localhost:${PORT}`));
+JS
+
+printf "\n✅ Bootstrap done. Next: \n  cd catalyst-itsm && pnpm install && pnpm -r dev\n\n"
