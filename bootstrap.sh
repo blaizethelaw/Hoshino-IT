@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Vars
+# === Config ===
 PROJECT_NAME="catalyst-itsm"
 DEFAULT_BRANCH="main"
 
@@ -38,10 +38,10 @@ cat <<EOF > package.json
 }
 EOF
 
-# Create apps
+# Create app folders
 mkdir -p apps/api apps/portal apps/agent
 
-# Create packages
+# Create package folders
 mkdir -p packages/ui packages/utils packages/types packages/sdk
 
 # Docker Compose
@@ -62,7 +62,7 @@ services:
       - "6379:6379"
 EOF
 
-# Minimal README
+# README
 cat <<EOF > README.md
 # $PROJECT_NAME
 Catalyst ITSM monorepo scaffold.
