@@ -1,20 +1,17 @@
 version: "3.8"
-
 services:
   app:
     image: mcr.microsoft.com/devcontainers/typescript-node:1-22-bullseye
-    command: ["sleep", "infinity"]
+    command: sleep infinity
     volumes:
       - ..:/workspaces:cached
-    depends_on:
-      pgapp:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      temporal:
-        condition: service_healthy
     networks:
       - default
+    depends_on:
+      - pgapp
+      - redis
+      - temporal
+      - temporal-ui
 
   pgapp:
     image: postgres:16
@@ -22,62 +19,37 @@ services:
       POSTGRES_DB: catalyst
       POSTGRES_USER: catalyst
       POSTGRES_PASSWORD: catalyst
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U catalyst"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-    networks:
-      - default
     ports:
       - "5432:5432"
 
   redis:
     image: redis:7
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-    networks:
-      - default
     ports:
       - "6379:6379"
 
   temporal:
     image: temporalio/auto-setup:1.23
+    depends_on:
+      - pgapp
     environment:
       DB: postgresql
       DB_HOST: pgapp
-      DB_NAME: catalyst
-      DB_PASSWORD: catalyst
       DB_PORT: "5432"
       DB_USER: catalyst
-    depends_on:
-      pgapp:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:7233"]
-      interval: 10s
-      timeout: 5s
-      retries: 15
-    networks:
-      - default
+      DB_PASSWORD: catalyst
+      DB_NAME: catalyst
     ports:
       - "7233:7233"
 
   temporal-ui:
     image: temporalio/ui:latest
+    depends_on:
+      - temporal
     environment:
       TEMPORAL_ADDRESS: temporal:7233
-    depends_on:
-      temporal:
-        condition: service_healthy
-    networks:
-      - default
     ports:
       - "8080:8080"
 
 networks:
   default:
-    driver: bridge
+    name: devcontainer_default
