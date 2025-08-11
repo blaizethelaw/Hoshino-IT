@@ -1,4 +1,5 @@
 version: "3.8"
+
 services:
   app:
     image: mcr.microsoft.com/devcontainers/typescript-node:1-22-bullseye
@@ -10,6 +11,7 @@ services:
       - redis
       - temporal
       - temporal-ui
+
   pgapp:
     image: postgres:16
     environment:
@@ -18,10 +20,12 @@ services:
       POSTGRES_DB: catalyst
     ports:
       - "5432:5432"
+
   redis:
     image: redis:7
     ports:
       - "6379:6379"
+
   temporal:
     image: temporalio/auto-setup:1.23
     environment:
@@ -35,6 +39,7 @@ services:
       - "7233:7233"
     depends_on:
       - pgapp
+
   temporal-ui:
     image: temporalio/ui:2.28
     environment:
