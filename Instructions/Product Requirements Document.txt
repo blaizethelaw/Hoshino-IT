@@ -1,0 +1,376 @@
+Product Requirements Document: Catalyst IT Service Management (ITSM) Platform
+1. Introduction
+1.1 Purpose
+This document outlines the product requirements for Catalyst ITSM, a comprehensive, user-centric, and commercially viable Software-as-a-Service (SaaS) IT ticketing system. Catalyst ITSM is designed for small to medium-sized businesses (SMBs) operating in modern, hybrid IT environments. This PRD will guide the development, design, and strategic decision-making for the platform.
+
+1.2 Scope
+The initial scope is to build a full-scale, easy-to-use ticketing system for internal IT support within a 100-user organization that utilizes on-premises Windows, Microsoft Azure, and Apple macOS. The system will be architected from the ground up as a scalable, multi-tenant SaaS platform, enabling future commercialization. The core philosophy is grounded in the best practices of the Information Technology Infrastructure Library (ITIL) to ensure operational excellence.
+
+1.3 Target Audience
+The primary target audience consists of two main user groups:
+
+End-Users: Employees within a small to medium-sized business who need to report IT issues or request IT services.
+
+Administrators/IT Agents: The IT team responsible for resolving issues and fulfilling service requests.
+
+1.4 Goals and Objectives
+For End-Users: To provide a simple, transparent, and frictionless experience for getting IT help, reducing frustration and increasing productivity.
+
+For Administrators: To create an efficient, powerful, and data-rich platform that streamlines workflows, automates repetitive tasks, and provides insights for continuous improvement.
+
+For the Business: To build a scalable, secure, and future-proof SaaS product that can be successfully commercialized, offering a robust ITSM solution to the SMB market.
+
+2. User Personas
+2.1 End-User Persona: "Alex," the Marketing Specialist
+Description: Alex is a tech-savvy marketing specialist who relies on various software and cloud services to do their job. They are focused on their own work and see IT as a means to an end.
+
+Needs & Goals:
+
+A quick and easy way to report when something is not working.
+
+A simple process for requesting new software or access to a shared drive.
+
+Clear and transparent communication on the status of their requests.
+
+The ability to solve common problems themselves without waiting for IT.
+
+Frustrations:
+
+Complex and lengthy ticket submission forms with confusing IT jargon.
+
+A lack of visibility into the status of their ticket ("a black hole").
+
+Having to repeatedly provide the same information for different requests.
+
+2.2 Administrator Persona: "Sam," the Network Administrator
+Description: Sam is the sole network administrator for a 100-person company. They are responsible for everything from network outages to onboarding new employees and need to manage a high volume of diverse tasks efficiently.
+
+Needs & Goals:
+
+A centralized hub to view and manage all incoming IT support work.
+
+The ability to quickly triage, prioritize, and assign tickets.
+
+Tools to automate routine tasks like ticket routing and notifications.
+
+Data-driven insights to identify recurring problems and justify resource needs.
+
+Seamless access to user and device information to speed up troubleshooting.
+
+Frustrations:
+
+Manually triaging a single inbox of mixed-up incidents and requests.
+
+Users bypassing the system and reporting issues via informal channels.
+
+Wasting time on repetitive, low-value tasks like password resets.
+
+Lack of context when a ticket is submitted (e.g., which laptop model a user has).
+
+3. Functional Requirements
+3.1 Core Ticketing System
+ID	Requirement	Description	Priority
+F-1.1	Differentiated Workstreams	
+The system must architecturally and procedurally separate 
+
+Incident Management ("Something is broken") and Service Request Fulfillment ("I need something").
+
+
+
+
+Must-Have
+F-1.2	Incident Management Lifecycle	
+Support the full ITIL incident lifecycle: Identification & Logging, Categorization, Prioritization, Response & Resolution, and Closure.
+
+
+Must-Have
+F-1.3	Service Request Lifecycle	
+Support the full ITIL service request lifecycle: Submission & Categorization via a Service Catalog, Approval, Fulfillment, and Closure & Verification.
+
+
+Must-Have
+F-1.4	Unified Ticket Ingestion	
+Consolidate tickets from multiple channels into a single, centralized hub. This must include: <br> • 
+
+
+Self-Service Portal: A guided, web-based submission experience. <br> • 
+
+
+Email-to-Ticket: Automatically convert emails sent to a support address into tickets. <br> • 
+
+
+ChatOps Integration: Allow users to create and manage tickets from platforms like Slack or Microsoft Teams.
+
+
+Must-Have
+F-1.5	Ticket Categorization & Priority	
+Every ticket must have fields for logical categorization (e.g., 
+
+Software > VPN) and a calculated priority based on Impact x Urgency.
+
+
+
+
+Must-Have
+F-1.6	Ticket Assignment & Statuses	
+Ability to assign tickets to specific agents or teams and track progress through a customizable lifecycle (e.g., Open, In Progress, Resolved).
+
+
+Must-Have
+F-1.7	Internal Collaboration	
+Agents must be able to add private notes to a ticket, visible only to other agents, for internal discussion.
+
+
+Must-Have
+
+Export to Sheets
+3.2 Automation Engine
+ID	Requirement	Description	Priority
+F-2.1	Rule-Based Automation	
+The system must have a rule-based engine to execute actions based on triggers and conditions.
+
+
+Must-Have
+F-2.2	Automated Ticket Routing	
+Automatically assign incoming tickets to the correct team or agent based on category, priority, or keywords.
+
+
+Should-Have
+F-2.3	Automated Notifications	
+Automatically send email or chat notifications to users and agents on status changes, new assignments, or updates.
+
+
+Must-Have
+F-2.4	SLA Management & Escalation	
+Actively monitor ticket timers against their SLA and automatically escalate (e.g., increase priority, notify manager) as a breach approaches.
+
+
+Should-Have
+F-2.5	Canned Responses	
+Allow the creation of pre-written response templates with variables (e.g., 
+
+%{ticket.user.name}) to personalize messages.
+
+
+Should-Have
+F-2.6	Approval Workflows	
+A formal engine for routing Service Requests that require managerial or financial approval before fulfillment.
+
+
+Could-Have
+
+Export to Sheets
+3.3 Knowledge Management
+ID	Requirement	Description	Priority
+F-3.1	Integrated Knowledge Base (KB)	
+A deeply integrated KB that serves both end-users and support agents.
+
+
+Must-Have
+F-3.2	Ticket Deflection	
+Intelligently suggest relevant KB articles to users as they type in the ticket submission form to encourage self-service and deflect ticket creation.
+
+
+
+
+Should-Have
+F-3.3	Seamless Authoring	
+Agents must be able to create a new draft KB article directly from the resolution field of a solved ticket with a single click.
+
+
+Should-Have
+F-3.4	In-Ticket KB Search	
+From within the ticket interface, agents must be able to quickly search the KB and insert links to articles in their replies.
+
+
+Must-Have
+
+Export to Sheets
+3.4 End-User Self-Service Portal
+ID	Requirement	Description	Priority
+F-4.1	Minimalist, Action-Oriented Design	
+The portal homepage must be clean and uncluttered, prominently featuring a powerful search bar and two clear calls-to-action: "Report an Issue" and "Request Something".
+
+
+Must-Have
+F-4.2	User-Centric Language	
+All labels, instructions, and categories must be in plain, non-technical language, avoiding IT jargon.
+
+
+Must-Have
+F-4.3	Searchable Service Catalog	
+A user-friendly, searchable "menu" of all available IT services, with each item leading to a specific, tailored request form.
+
+
+Must-Have
+F-4.4	Transparent Status Tracking	
+A "My Requests" area where users can see a simple, visual timeline of their open and closed tickets, view updates, and add comments.
+
+
+Should-Have
+F-4.5	Smart Submission Forms	
+Ticket forms must be simple, using conditional logic to show only relevant fields and pre-populating known user information (e.g., name, department).
+
+
+
+
+Must-Have
+F-4.6	Enable Attachments	
+Users must be able to easily attach images, logs, and other files to their tickets.
+
+
+Must-Have
+
+Export to Sheets
+3.5 Administrator Cockpit
+ID	Requirement	Description	Priority
+F-5.1	Customizable Dashboards	
+Each agent must be able to create a personalized dashboard with widgets for the queues, KPIs, and reports most relevant to their responsibilities.
+
+
+Should-Have
+F-5.2	Configurable Queues	
+Administrators must be able to create custom queues (saved filters) based on any ticket attribute (e.g., status, priority, category).
+
+
+Must-Have
+F-5.3	At-a-Glance Triage View	
+The main ticket queue view must display critical information in sortable columns: Ticket ID, Subject, Requester, Priority, SLA Status, and Assigned Agent.
+
+
+Must-Have
+F-5.4	Bulk Actions	
+Ability to perform actions (assign, change status, add note) on multiple tickets at once.
+
+
+Should-Have
+F-5.5	Agent Collision Avoidance	
+Implement a locking mechanism or visual indicator that shows when a ticket is being actively viewed or edited by another agent.
+
+
+Should-Have
+
+Export to Sheets
+3.6 Reporting and Analytics
+ID	Requirement	Description	Priority
+F-6.1	Key Performance Indicator (KPI) Tracking	
+The system must be designed to capture and report on essential service desk metrics. This includes: <br> • 
+
+
+
+Time-Based: Mean Time to First Response, MTTR. <br> • 
+
+
+Efficiency: First Contact Resolution (FCR) Rate, Ticket Backlog. <br> • 
+
+
+Quality: SLA Success Rate, Customer Satisfaction (CSAT) Scores.
+
+
+Must-Have
+F-6.2	Scheduled Reports	
+Support the creation of scheduled reports that can be automatically generated and emailed to stakeholders.
+
+
+Should-Have
+F-6.3	Drill-Down Capabilities	
+Allow administrators to drill down from a high-level chart (e.g., "SLA Breaches This Week") directly to the underlying list of tickets.
+
+
+Should-Have
+
+Export to Sheets
+4. Non-Functional Requirements
+4.1 Technical and Architectural
+ID	Requirement	Description
+NF-1.1	Multi-Tenancy	
+As a SaaS platform, the architecture must support multi-tenancy, where a single application instance serves multiple customers while keeping their data completely isolated and secure.
+
+
+NF-1.2	Scalability	
+The system must be built on a cloud-native architecture (e.g., using containers on Azure Kubernetes Service) that can scale horizontally to handle growth in users and ticket volume without performance degradation.
+
+
+
+
+NF-1.3	RESTful API	
+A comprehensive, well-documented RESTful API is critical for enabling integrations and future-proofing the system. The API must be built on standard REST principles (stateless, uniform interface, standard HTTP methods).
+
+
+NF-1.4	Cross-Platform Support	
+The system must fully support users and devices across Windows, macOS, and Microsoft Azure environments.
+
+
+
+Export to Sheets
+4.2 Integrations
+ID	Requirement	Description	Priority
+NF-2.1	Directory Services Integration	
+Seamless integration with Active Directory (AD) and Azure AD for user synchronization and Single Sign-On (SSO).
+
+Must-Have
+NF-2.2	IT Asset Management (ITAM) Integration	
+Ability to connect to an ITAM database to automatically associate tickets with a user's assigned hardware and software assets, providing critical context to agents.
+
+
+
+
+Could-Have
+NF-2.3	Network Monitoring Tools Integration	
+Bidirectional integration with tools like Nagios and Zabbix to automatically create high-priority incident tickets from monitoring alerts.
+
+
+
+
+Could-Have
+NF-2.4	Remote Access Tools Integration	
+Allow an agent to initiate a secure remote control session on a user's machine directly from a button within the ticket interface.
+
+
+Could-Have
+
+Export to Sheets
+4.3 Security
+ID	Requirement	Description
+NF-3.1	Data Isolation	
+In the multi-tenant architecture, every database query must be filtered by a 
+
+tenant_id to prevent any possibility of data leakage between customers.
+
+
+
+NF-3.2	Authentication	
+All API requests must be authenticated using standard methods like OAuth 2.0 or token-based authentication.
+
+
+NF-3.3	Role-Based Access Control (RBAC)	The system must support RBAC to ensure that agents and users only have access to the data and functionality necessary for their roles.
+
+Export to Sheets
+5. Future-Proofing and Advanced Capabilities
+ID	Requirement	Description
+FUT-1.1	AI-Powered Chatbots	
+The architecture should allow for the future integration of AI chatbots to handle Tier-1 requests autonomously and gather information before escalating to a human agent.
+
+
+
+
+FUT-1.2	Intelligent Ticket Processing	
+The system should be designed to leverage AI/ML models to automatically suggest categories, predict priority, and route tickets based on historical data.
+
+
+FUT-1.3	Agent Assist	
+The system should be capable of integrating AI-powered "copilot" features to proactively surface relevant knowledge and suggestions to agents as they work on tickets.
+
+
+
+Export to Sheets
+6. Go-to-Market / Commercialization Strategy
+ID	Requirement	Description
+GTM-1.1	Internal Beta Test	
+The initial internal deployment will serve as the beta test to gather feedback, fix pain points, and refine the product before a public launch.
+
+GTM-1.2	Modular Design for Tiered Pricing	
+The system must be designed with a modular architecture (e.g., using feature flags) to easily enable or disable features, allowing for different pricing tiers in the future SaaS offering.
+
+GTM-1.3	Permissive Open-Source Licensing	
+If customizing an open-source project, a platform with a permissive license (e.g., Apache 2.0, MIT) must be chosen to avoid "copyleft" restrictions that are incompatible with a proprietary commercial model
