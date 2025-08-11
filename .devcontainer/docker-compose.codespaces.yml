@@ -1,0 +1,64 @@
+version: "3.8"
+services:
+  app:
+    image: mcr.microsoft.com/devcontainers/typescript-node:1-22-bullseye
+    init: true
+    volumes:
+      - ..:/workspaces/${COMPOSE_PROJECT_NAME}:cached
+    working_dir: /workspaces/${COMPOSE_PROJECT_NAME}
+    command: sleep infinity
+    depends_on:
+      - pgapp
+      - redis
+      - temporal
+      - temporal-ui
+  pgapp:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: catalyst
+      POSTGRES_PASSWORD: catalyst
+      POSTGRES_DB: catalyst
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U catalyst -d catalyst"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+  temporal-postgres:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: temporal
+      POSTGRES_PASSWORD: temporal
+      POSTGRES_DB: temporal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U temporal -d temporal"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+  temporal:
+    image: temporalio/auto-setup:1.23
+    environment:
+      - DB=postgresql
+      - DB_HOST=temporal-postgres
+      - DB_PORT=5432
+      - DB_USER=temporal
+      - DB_PASSWORD=temporal
+      - DB_NAME=temporal
+      - DYNAMIC_CONFIG_FILE_PATH=config/dynamicconfig/development-sql.yaml
+    ports:
+      - "7233:7233"
+    depends_on:
+      - temporal-postgres
+  temporal-ui:
+    image: temporalio/ui:2.28
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
+    ports:
+      - "8080:8080"
+    depends_on:
+      - temporal
