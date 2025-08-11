@@ -1,5 +1,6 @@
 # dependencies
 node_modules
+catalyst-itsm/functions/lib
 
 # logs
 npm-debug.log*
