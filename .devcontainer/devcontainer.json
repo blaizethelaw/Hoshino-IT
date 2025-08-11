@@ -8,30 +8,6 @@
     "ghcr.io/devcontainers/features/github-cli:1": {},
     "ghcr.io/devcontainers/features/pnpm:1": { "version": "9" }
   },
-  "forwardPorts": [3000, 3001, 4000, 8080, 5432],
-  "portsAttributes": {
-    "3000": { "label": "Portal" },
-    "3001": { "label": "Agent" },
-    "4000": { "label": "API" },
-    "8080": { "label": "Temporal UI" },
-    "5432": { "label": "Postgres" }
-  },
-  "postCreateCommand": "corepack enable && corepack prepare pnpm@9 --activate && pnpm -v",
-  "remoteEnv": {
-    "DATABASE_URL": "postgresql://catalyst:catalyst@pgapp:5432/catalyst",
-    "REDIS_URL": "redis://redis:6379",
-    "TEMPORAL_ADDRESS": "temporal:7233",
-    "NEXT_PUBLIC_API_URL": "http://localhost:4000"
-  },
-  "customizations": {
-    "vscode": {
-      "extensions": [
-        "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode",
-        "Prisma.prisma",
-        "ms-azuretools.vscode-docker"
-      ]
-    }
-  },
-  "updateRemoteUserUID": false
+  "forwardPorts": [3000, 3001, 4000, 8080],
+  "postCreateCommand": "corepack enable && corepack prepare pnpm@9 --activate"
 }
