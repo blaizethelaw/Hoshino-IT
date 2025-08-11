@@ -1,0 +1,10 @@
+{
+  "name": "catalyst-itsm",
+  "private": true,
+  "packageManager": "pnpm@9",
+  "scripts": {
+    "dev": "pnpm -r --parallel dev",
+    "build": "echo no-build",
+    "lint": "echo no-lint"
+  }
+}
