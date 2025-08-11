@@ -1,5 +1,5 @@
 {
-  "name": "Catalyst ITSM (Codespaces)",
+  "name": "Hoshino IT (Codespaces)",
   "dockerComposeFile": ["./docker-compose.codespaces.yml"],
   "service": "app",
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
@@ -8,16 +8,18 @@
     "ghcr.io/devcontainers/features/github-cli:1": {}
   },
   "forwardPorts": [3000, 3001, 4000, 5432, 6379, 7233, 8080],
-  "postCreateCommand": "corepack enable && corepack prepare pnpm@9 --activate && pnpm install && bash .devcontainer/bootstrap-inline.sh && pnpm -r dev",
+  "postCreateCommand": "corepack enable && corepack prepare pnpm@9 --activate && echo Ready",
+  "updateContentCommand": "echo \"✅ Devcontainer ready\"",
   "customizations": {
     "vscode": {
       "settings": {
-        "editor.formatOnSave": true
+        "editor.formatOnSave": true,
+        "files.eol": "\n",
+        "terminal.integrated.defaultProfile.linux": "bash"
       },
       "extensions": [
         "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode",
-        "github.copilot"
+        "esbenp.prettier-vscode"
       ]
     }
   }
