@@ -7,6 +7,18 @@
     "ghcr.io/devcontainers/features/node:1": { "version": "22" },
     "ghcr.io/devcontainers/features/github-cli:1": {}
   },
-  "forwardPorts": [3000, 3001, 4000, 8080],
-  "postCreateCommand": "npm install -g pnpm && corepack enable && corepack prepare pnpm@9 --activate"
+  "forwardPorts": [3000, 3001, 4000, 5432, 6379, 7233, 8080],
+  "postCreateCommand": "corepack enable && corepack prepare pnpm@9 --activate && pnpm install && GIT_INIT=0 bash bootstrap.sh && pnpm -r dev",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "editor.formatOnSave": true
+      },
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "github.copilot"
+      ]
+    }
+  }
 }
