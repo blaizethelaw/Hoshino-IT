@@ -13,9 +13,14 @@ const firebaseConfig = {
 
 let app;
 
+// Validate that all config values are present and not placeholder text
+const hasValidConfig = Object.values(firebaseConfig).every(
+  (value) => typeof value === 'string' && value.trim() !== '' && !/^your[-_]/i.test(value)
+);
+
 try {
-  if (!firebaseConfig.apiKey) {
-    throw new Error('Missing Firebase configuration.');
+  if (!hasValidConfig) {
+    throw new Error('Missing or invalid Firebase configuration. Please check your environment variables.');
   }
   app = initializeApp(firebaseConfig);
 } catch (error) {
