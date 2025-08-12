@@ -1,43 +1,19 @@
 <?php
 
-namespace Laminas\Validator;
-
-use Laminas\ModuleManager\ModuleManager;
+namespace Laminas\Mail;
 
 class Module
 {
     /**
-     * Return default laminas-validator configuration for laminas-mvc applications.
+     * Retrieve laminas-mail package configuration for laminas-mvc context.
      *
-     * @return array[]
-     * @psalm-return array{service_manager: array}
+     * @return array
      */
     public function getConfig()
     {
         $provider = new ConfigProvider();
-
         return [
             'service_manager' => $provider->getDependencyConfig(),
         ];
-    }
-
-    /**
-     * Register a specification for the ValidatorManager with the ServiceListener.
-     *
-     * @param ModuleManager $moduleManager
-     * @return void
-     */
-    public function init($moduleManager)
-    {
-        $event           = $moduleManager->getEvent();
-        $container       = $event->getParam('ServiceManager');
-        $serviceListener = $container->get('ServiceListener');
-
-        $serviceListener->addServiceManager(
-            'ValidatorManager',
-            'validators',
-            ValidatorProviderInterface::class,
-            'getValidatorConfig'
-        );
     }
 }

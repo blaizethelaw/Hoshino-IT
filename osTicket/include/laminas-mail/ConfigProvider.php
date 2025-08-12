@@ -1,11 +1,11 @@
 <?php
 
-namespace Laminas\Validator;
+namespace Laminas\Mail;
 
 class ConfigProvider
 {
     /**
-     * Return configuration for this component.
+     * Retrieve configuration for laminas-mail package.
      *
      * @return array
      */
@@ -17,23 +17,19 @@ class ConfigProvider
     }
 
     /**
-     * Return dependency mappings for this component.
+     * Retrieve dependency settings for laminas-mail package.
      *
      * @return array
      */
     public function getDependencyConfig()
     {
         return [
+            // Legacy Zend Framework aliases
             'aliases'   => [
-                Translator\TranslatorInterface::class => Translator\Translator::class,
-                'ValidatorManager'                    => ValidatorPluginManager::class,
-
-                // Legacy Zend Framework aliases
-                'Zend\Validator\ValidatorPluginManager' => ValidatorPluginManager::class,
+                'Zend\Mail\Protocol\SmtpPluginManager' => Protocol\SmtpPluginManager::class,
             ],
             'factories' => [
-                Translator\Translator::class  => Translator\TranslatorFactory::class,
-                ValidatorPluginManager::class => ValidatorPluginManagerFactory::class,
+                Protocol\SmtpPluginManager::class => Protocol\SmtpPluginManagerFactory::class,
             ],
         ];
     }
