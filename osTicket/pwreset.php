@@ -1,13 +1,37 @@
 <?php
+/*********************************************************************
+    pwreset.php
 
-require_once('client.inc.php');
-if(!defined('INCLUDE_DIR')) die('Fatal Error');
-define('CLIENTINC_DIR',INCLUDE_DIR.'client/');
-define('OSTCLIENTINC',TRUE); //make includes happy
+    Handles step 2, 3 and 5 of password resetting
+        1. Fail to login (2+ fail login attempts)
+        2. Visit password reset form and enter username or email
+        3. Receive an email with a link and follow it
+        4. Visit password reset form again, with the link
+        5. Enter the username or email address again and login
+        6. Password change is now required, user changes password and
+           continues on with the session
 
-require_once(INCLUDE_DIR.'class.client.php');
+    Peter Rotich <peter@osticket.com>
+    Jared Hancock <jared@osticket.com>
+    Copyright (c)  2006-2013 osTicket
+    http://www.osticket.com
 
-$inc = 'pwreset.request.php';
+    Released under the GNU General Public License WITHOUT ANY WARRANTY.
+    See LICENSE.TXT for details.
+
+    vim: expandtab sw=4 ts=4 sts=4:
+**********************************************************************/
+require_once('../main.inc.php');
+if(!defined('INCLUDE_DIR')) die('Fatal Error. Kwaheri!');
+
+// Bootstrap gettext translations. Since no one is yet logged in, use the
+// system or browser default
+TextDomain::configureForUser();
+
+require_once(INCLUDE_DIR.'class.staff.php');
+require_once(INCLUDE_DIR.'class.csrf.php');
+
+$tpl = 'pwreset.php';
 if($_POST) {
     if (!$ost->checkCSRFToken()) {
         Http::response(400, __('Valid CSRF Token Required'));
@@ -17,74 +41,47 @@ if($_POST) {
         case 'sendmail':
             $userid = (string) $_POST['userid'];
             if (Validator::is_userid($userid)
-                    && ($acct=ClientAccount::lookupByUsername($userid))) {
-                if (!$acct->isPasswdResetEnabled()) {
-                    $banner = __('Password reset is not enabled for your account. Contact your administrator');
-                }
-                elseif (!$acct->hasPassword()
-                        || (($bk=$acct->backend) && ($bk !== 'client')))
-                    $banner = __('Unable to reset password. Contact your administrator');
-                elseif ($acct->sendResetEmail()) {
-                    $inc = 'pwreset.sent.php';
-                }
-                else
-                    $banner = __('Unable to send reset email.')
-                        .' '.__('Internal error occurred');
+                    && ($staff=Staff::lookup($userid))) {
+                if (!$staff->hasPassword()
+                        || (($bk=$staff->getAuthBackend()) && !($bk instanceof osTicketStaffAuthentication)))
+                    $msg = __('Unable to reset password. Contact your administrator');
+                elseif (!$staff->sendResetEmail())
+                    $tpl = 'pwreset.sent.php';
             }
             else
-                $inc = 'pwreset.sent.php';
-
+                $tpl = 'pwreset.sent.php';
             break;
-        case 'reset':
-            $inc = 'pwreset.login.php';
+        case 'newpasswd':
+            // TODO: Compare passwords
+            $tpl = 'pwreset.login.php';
             $errors = array();
-            if ($client = UserAuthenticationBackend::processSignOn($errors)) {
-                Http::redirect('index.php');
+            if ($staff = StaffAuthenticationBackend::processSignOn($errors)) {
+                $info = array('page' => 'index.php');
+                Http::redirect($info['page']);
             }
             elseif (isset($errors['msg'])) {
-                $banner = $errors['msg'];
+                $msg = $errors['msg'];
             }
             break;
     }
 }
 elseif ($_GET['token']) {
-    $banner = __('Re-enter your username or email');
-    $inc = 'pwreset.login.php';
+    $msg = __('Please enter your username or email');
     $_config = new Config('pwreset');
     if (($id = $_config->get($_GET['token']))
-            && ($acct = ClientAccount::lookup(array('user_id'=>substr($id,1))))) {
-        if (!$acct->isConfirmed()) {
-            $inc = 'register.confirmed.inc.php';
-            $acct->confirm();
-            // FIXME: The account has to be uncached in order for the lookup
-            // in the ::processSignOn to detect the confirmation
-            ModelInstanceManager::uncache($acct);
-            // Log the user in
-            if ($client = UserAuthenticationBackend::processSignOn($errors)) {
-                if ($acct->hasPassword() && !$acct->get('backend')) {
-                    $acct->cancelResetTokens();
-                }
-                // No password setup yet -- force one to be created
-                else {
-                    $_SESSION['_client']['reset-token'] = $_GET['token'];
-                    $acct->forcePasswdReset();
-                }
-                Http::redirect('account.php?confirmed');
-            }
-        }
-    }
-    elseif ($id && ($user = User::lookup($id)))
-        $inc = 'pwreset.create.php';
+            && is_numeric($id)
+            && ($staff = Staff::lookup( (int) $id)))
+        // TODO: Detect staff confirmation (for welcome email)
+        $tpl = 'pwreset.login.php';
     else
-        Http::redirect('index.php');
+        header('Location: index.php');
+}
+elseif ($cfg->allowPasswordReset()) {
+    $msg = __('Enter your username or email address below');
 }
 else {
-    $banner = __('Enter your username or email address below');
+    $_SESSION['_staff']['auth']['msg']=__('Password resets are disabled');
+    return header('Location: index.php');
 }
-
-$nav = new UserNav();
-$nav->setActiveNav('status');
-require CLIENTINC_DIR.'header.inc.php';
-require CLIENTINC_DIR.$inc;
-require CLIENTINC_DIR.'footer.inc.php';
-?>
+define("OSTSCPINC",TRUE); //Make includes happy!
+include_once(INCLUDE_DIR.'staff/'. $tpl);

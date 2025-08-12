@@ -17,13 +17,23 @@
 **********************************************************************/
 // Use Noop Session Handler
 define('NOOP_SESSION', true);
-require('client.inc.php');
+require_once('../main.inc.php');
 $ttl = 86400; // max-age
-if (($logo = $ost->getConfig()->getClientLogo())) {
+if (isset($_GET['backdrop'])) {
+    if (($backdrop = $ost->getConfig()->getStaffLoginBackdrop())) {
+        $backdrop->display(false, $ttl);
+        // ::display() will not return
+    }
+    header("Cache-Control: private, max-age=$ttl");
+    header('Pragma: private');
+    Http::redirect('images/login-headquarters.jpg');
+}
+elseif (($logo = $ost->getConfig()->getStaffLogo())) {
     $logo->display(false, $ttl);
 }
 
 header("Cache-Control: private, max-age=$ttl");
 header('Pragma: private');
-header('Location: '.ASSETS_PATH.'images/logo.png');
+Http::redirect('images/ost-logo.png');
+
 ?>
