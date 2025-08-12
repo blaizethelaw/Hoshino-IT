@@ -1,7 +1,11 @@
 <?php
 
-namespace Laminas\Validator\Exception;
+namespace Laminas\Mail\Exception;
 
-class InvalidArgumentException extends \InvalidArgumentException implements ExceptionInterface
+/**
+ * Exception for Laminas\Mail component.
+ */
+class InvalidArgumentException extends \InvalidArgumentException implements
+    ExceptionInterface
 {
 }

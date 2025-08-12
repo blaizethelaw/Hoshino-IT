@@ -1,7 +1,9 @@
 <?php
 
-namespace Laminas\Validator\Exception;
+namespace Laminas\Mail\Exception;
 
-interface ExceptionInterface
+use Throwable;
+
+interface ExceptionInterface extends Throwable
 {
 }
