@@ -1,6 +1,6 @@
-# laminas-mail
+# laminas-validator
 
-[![Build Status](https://github.com/laminas/laminas-mail/workflows/Continuous%20Integration/badge.svg)](https://github.com/laminas/laminas-mail/actions?query=workflow%3A"Continuous+Integration")
+[![Build Status](https://github.com/laminas/laminas-validator/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/laminas/laminas-validator/actions/workflows/continuous-integration.yml)
 
 > ## 🇷🇺 Русским гражданам
 >
@@ -18,11 +18,24 @@
 >
 > You trust us enough to use our software. We ask that you trust us to say the truth on this. We need your help. Go out and protest this unnecessary war. Stop the bloodshed. Say "stop the war!"
 
-`Laminas\Mail` provides generalized functionality to compose and send both text and
-MIME-compliant multipart email messages. Mail can be sent with `Laminas\Mail` via
-the `Mail\Transport\Sendmail`, `Mail\Transport\Smtp` or the `Mail\Transport\File`
-transport. Of course, you can also implement your own transport by implementing
-the `Mail\Transport\TransportInterface`.
+laminas-validator provides a set of commonly needed validators. It also provides a
+simple validator chaining mechanism by which multiple validators may be applied
+to a single datum in a user-defined order.
 
-- File issues at https://github.com/laminas/laminas-mail/issues
-- Documentation is at https://docs.laminas.dev/laminas-mail/
+## Installation
+
+Run the following to install this library:
+
+```bash
+$ composer require laminas/laminas-validator
+```
+
+## Documentation
+
+Browse the documentation online at https://docs.laminas.dev/laminas-validator/
+
+## Support
+
+* [Issues](https://github.com/laminas/laminas-validator/issues/)
+* [Chat](https://laminas.dev/chat/)
+* [Forum](https://discourse.laminas.dev/)
