@@ -13,21 +13,18 @@ const firebaseConfig = {
 
 let app;
 
-// Ensure all Firebase config values are provided and not placeholder text
+// Validate that all config values are present and not placeholder text
 const hasValidConfig = Object.values(firebaseConfig).every(
   (value) => typeof value === 'string' && value.trim() !== '' && !/^your[-_]/i.test(value)
 );
 
-if (hasValidConfig) {
-  try {
-    app = initializeApp(firebaseConfig);
-  } catch (error) {
-    console.error('Firebase initialization error:', error);
+try {
+  if (!hasValidConfig) {
+    throw new Error('Missing or invalid Firebase configuration. Please check your environment variables.');
   }
-} else {
-  console.error(
-    'Firebase initialization error: missing or invalid configuration. Please check your environment variables.'
-  );
+  app = initializeApp(firebaseConfig);
+} catch (error) {
+  console.error('Firebase initialization error:', error);
 }
 
 export const db = app ? getFirestore(app) : null;
