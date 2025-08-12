@@ -4,7 +4,7 @@ Drop these files/folders straight into your repo root. They match the scaffold a
 
 > Contents:
 > - `/infra` – Terraform **and** Bicep starter modules (choose one stack; both included)
-> - `/db/migrations` – Supabase‑ready SQL schema + RLS policies + seeds
+> - `/db/migrations` – Firebase‑ready SQL schema + RLS policies + seeds
 > - `/.github/workflows` – CI pipelines for **infra**, **API**, **web apps**, **db**, and **seed/smoke** across **dev/staging/prod** with OIDC to Azure
 
 ---
@@ -357,7 +357,7 @@ module app       'appservice.bicep' = { name: 'apps'      params: { env: env, lo
 
 ---
 
-## 3) Supabase SQL + RLS — `/db/migrations`
+## 3) Firebase SQL + RLS — `/db/migrations`
 
 ```
 /db
@@ -535,7 +535,7 @@ alter table sla_policies enable row level security;
 alter table approvals enable row level security;
 ```
 
-### 3.3 `0003_policies.sql` — policies (Supabase JWT)
+### 3.3 `0003_policies.sql` — policies (Firebase JWT)
 ```sql
 -- Helper: current tenant/user from JWT
 create or replace function auth_tenant() returns uuid language sql stable as $$
@@ -669,7 +669,7 @@ insert into kb_articles (tenant_id,title,content_md,status)
 
 ### 3.7 `README.md`
 ```md
-# Supabase Migrations
+# Firebase Migrations
 Apply in order:
 
 ```bash
@@ -815,7 +815,7 @@ jobs:
           package:   apps/${{ matrix.app }}
 ```
 
-### 4.4 `db-migrate.yml` — Prisma or Supabase migrations (env‑gated)
+### 4.4 `db-migrate.yml` — Prisma or Firebase migrations (env‑gated)
 ```yaml
 name: db-migrate
 on:
@@ -830,7 +830,7 @@ jobs:
     environment: ${{ github.event.inputs.env }}
     steps:
       - uses: actions/checkout@v4
-      - name: Supabase (SQL) apply
+      - name: Firebase (SQL) apply
         if: inputs.target == 'supabase'
         env:
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
@@ -880,7 +880,7 @@ Create environments named **dev**, **staging**, **prod** and set:
 
 **Secrets** (per env):
 - `AZURE_SUBSCRIPTION_ID`, `AZURE_TENANT_ID`, `AZURE_CLIENT_ID`
-- `DATABASE_URL` (API/Prisma), `SUPABASE_DB_URL` (Supabase SQL)
+- `DATABASE_URL` (API/Prisma), `SUPABASE_DB_URL` (Firebase SQL)
 
 **Vars** (per env):
 - `API_APP_NAME`, `WEB_PORTAL_APP_NAME`, `WEB_AGENT_APP_NAME`, `AZURE_SLOT` (for staging slot)
@@ -897,7 +897,7 @@ terraform init -backend-config=backend.hcl
 terraform apply -var env=dev
 ```
 
-**Supabase SQL**
+**Firebase SQL**
 ```bash
 for f in db/migrations/*.sql; do psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -f "$f"; done
 ```

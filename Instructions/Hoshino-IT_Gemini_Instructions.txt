@@ -3,11 +3,11 @@ Part I: Foundational Architecture and Core Principles
 This initial section establishes the strategic "why" behind the application. It synthesizes the high-level business goals from the Product Requirements Document and the process-oriented principles from the ITIL whitepaper into a concrete architectural vision. This ensures that every subsequent technical decision is aligned with the core product strategy.
 
 Section 1.1: System Architecture Overview
-The Catalyst IT Service Management (ITSM) platform will be architected as a modern, three-tier, decoupled system. This structure is composed of a React Single-Page Application (SPA) frontend, a secure RESTful API layer acting as an intermediary, and a robust backend powered by the Superbase platform-as-a-service ecosystem. This architectural choice is deliberate, enforcing a clear separation of concerns that is fundamental to building a scalable and maintainable Software-as-a-Service (SaaS) application.
+The Catalyst IT Service Management (ITSM) platform will be architected as a modern, three-tier, decoupled system. This structure is composed of a React Single-Page Application (SPA) frontend, a secure RESTful API layer acting as an intermediary, and a robust backend powered by the Firebase platform-as-a-service ecosystem. This architectural choice is deliberate, enforcing a clear separation of concerns that is fundamental to building a scalable and maintainable Software-as-a-Service (SaaS) application.
 
 The frontend, built with React.js, is responsible for the entire user interface (UI) and user experience (UX). It captures all user input, displays information, and provides interactive feedback. Drawing an analogy from the architectural whitepaper, the frontend is the "dining room" of the application—the space where the user interacts with the service. Its sole responsibility is presentation and user interaction; it does not handle business logic or long-term data storage. The provided React prototype serves as the foundational codebase for this tier, establishing a component-based structure that promotes reusability and rapid development.
 
-The backend, built upon Superbase, is the "kitchen" of the application. It is responsible for all the heavy lifting: executing business logic, processing data, managing user authentication, and ensuring the long-term, secure storage of all application data. Superbase provides an integrated suite of tools, including a full-featured PostgreSQL database, a complete authentication system, and file storage, which accelerates development by handling complex backend infrastructure tasks automatically.
+The backend, built upon Firebase, is the "kitchen" of the application. It is responsible for all the heavy lifting: executing business logic, processing data, managing user authentication, and ensuring the long-term, secure storage of all application data. Firebase provides an integrated suite of tools, including a full-featured PostgreSQL database, a complete authentication system, and file storage, which accelerates development by handling complex backend infrastructure tasks automatically.
 
 Connecting these two tiers is the Application Programming Interface (API), which acts as the "waiter". The API defines a strict contract for how the frontend and backend communicate. All data exchange, from fetching a list of tickets to creating a new user, is facilitated through this RESTful API layer. This decoupled model is inherently flexible and scalable. The frontend and backend can be developed, tested, deployed, and scaled independently of one another. For example, a new mobile application frontend could be developed to consume the same API without requiring any changes to the backend, or the backend could be migrated to a different technology stack without impacting the user-facing application, ensuring the platform is future-proof and adaptable to evolving business needs.
 
@@ -45,34 +45,34 @@ The Catalyst ITSM platform is being architected as a commercial, multi-tenant Sa
 
 The chosen multi-tenancy strategy is the "Shared Database, Shared Schema" model. This approach is highly cost-effective and is the standard for many modern SaaS applications, particularly in their early stages. In this model, all tenants share the same application infrastructure and the same database tables. Data isolation is not achieved through physical separation but through logical separation enforced at the application and database layers.
 
-The cornerstone of this model is the inclusion of a tenant_id column in every database table that contains tenant-specific data. This column acts as a discriminator, linking every piece of data—every ticket, user, asset, and comment—to the specific tenant organization it belongs to. This is a non-negotiable architectural requirement. Every database query executed by the application must be filtered by the tenant_id of the currently authenticated user to prevent any possibility of data leakage between tenants. This strict data scoping must be enforced at multiple levels, including the API logic and, most critically, through database-level security policies such as PostgreSQL's Row Level Security (RLS), a feature natively supported by Superbase. This ensures that even in the event of an application-level bug, the database itself will prevent one tenant from accessing another's data.
+The cornerstone of this model is the inclusion of a tenant_id column in every database table that contains tenant-specific data. This column acts as a discriminator, linking every piece of data—every ticket, user, asset, and comment—to the specific tenant organization it belongs to. This is a non-negotiable architectural requirement. Every database query executed by the application must be filtered by the tenant_id of the currently authenticated user to prevent any possibility of data leakage between tenants. This strict data scoping must be enforced at multiple levels, including the API logic and, most critically, through database-level security policies such as PostgreSQL's Row Level Security (RLS), a feature natively supported by Firebase. This ensures that even in the event of an application-level bug, the database itself will prevent one tenant from accessing another's data.
 
 Section 1.4: Technology Stack and Ecosystem
 The technology stack for the Catalyst ITSM platform has been selected to align with modern web development standards, prioritize developer productivity, and ensure long-term scalability and maintainability. The stack leverages a combination of best-in-class open-source technologies and managed services to accelerate development and reduce operational overhead.
 
 Frontend: The user interface will be built as a Single-Page Application using React.js. This choice is based on React's robust ecosystem, component-based architecture for building reusable UIs, and high performance due to its virtual DOM. The existing prototype provides a solid foundation of components and a logical application structure. Best practices for building scalable and maintainable SaaS frontends with React, such as efficient state management and performance optimization techniques, will be strictly followed.
 
-Backend & Database: The entire backend infrastructure will be powered by Superbase. Superbase is an open-source Firebase alternative that provides a suite of backend tools built around a dedicated PostgreSQL database. This choice is ideal for Catalyst ITSM, which requires a structured, relational database to model the complex relationships between users, tickets, assets, and comments. Superbase also provides built-in services for authentication (Superbase Auth) and file storage (Superbase Storage), which directly fulfill core application requirements and significantly reduce backend development time.
+Backend & Database: The entire backend infrastructure will be powered by Firebase. Firebase is an open-source Firebase alternative that provides a suite of backend tools built around a dedicated PostgreSQL database. This choice is ideal for Catalyst ITSM, which requires a structured, relational database to model the complex relationships between users, tickets, assets, and comments. Firebase also provides built-in services for authentication (Firebase Auth) and file storage (Firebase Storage), which directly fulfill core application requirements and significantly reduce backend development time.
 
 AI Integration: Advanced "Agent Assist" features will be powered by the Google Gemini API. This large language model will be used to provide intelligent capabilities to IT agents, such as summarizing long ticket conversations and suggesting potential troubleshooting steps for incidents. The integration will be handled via a secure backend service to protect API credentials and manage usage.
 
 Deployment & Hosting: The frontend application will be deployed and hosted on Netlify. Netlify is a modern platform for building and deploying web applications that offers a seamless, Git-based workflow, built-in continuous integration and continuous deployment (CI/CD), and a global content delivery network (CDN) for high performance. This allows the development team to focus on building features rather than managing infrastructure.
 
-Future Real-time Capabilities: To enhance the user experience with real-time features, such as live comment updates and instant notifications, the architecture will incorporate Firebase (specifically, its Firestore or Realtime Database services). While Superbase will remain the primary database of record, Firebase will be used as a specialized real-time messaging layer, leveraging its battle-tested synchronization capabilities. This hybrid approach allows the platform to utilize the best tool for each specific job—PostgreSQL for structured relational data and Firebase for low-latency, real-time communication.
+Future Real-time Capabilities: To enhance the user experience with real-time features, such as live comment updates and instant notifications, the architecture will incorporate Firebase (specifically, its Firestore or Realtime Database services). While Firebase will remain the primary database of record, Firebase will be used as a specialized real-time messaging layer, leveraging its battle-tested synchronization capabilities. This hybrid approach allows the platform to utilize the best tool for each specific job—PostgreSQL for structured relational data and Firebase for low-latency, real-time communication.
 
 Part II: Backend Implementation: Database, Authentication, and Business Logic
-This part translates the architectural principles into a concrete implementation plan for the backend, focusing on the data model, user authentication, and core server-side logic that will power the Catalyst ITSM platform. All implementation will occur within the Superbase ecosystem.
+This part translates the architectural principles into a concrete implementation plan for the backend, focusing on the data model, user authentication, and core server-side logic that will power the Catalyst ITSM platform. All implementation will occur within the Firebase ecosystem.
 
-Section 2.1: The Superbase Ecosystem
-Superbase will serve as the comprehensive backend-as-a-service (BaaS) platform, providing the foundational pillars for the application's server-side operations. This integrated approach simplifies development and ensures seamless interplay between the database, authentication, and file storage components.
+Section 2.1: The Firebase Ecosystem
+Firebase will serve as the comprehensive backend-as-a-service (BaaS) platform, providing the foundational pillars for the application's server-side operations. This integrated approach simplifies development and ensures seamless interplay between the database, authentication, and file storage components.
 
-PostgreSQL Database: At the heart of Superbase is a full-featured PostgreSQL database for every project. This provides a powerful, open-source, and highly trusted relational database that is perfectly suited for the structured data model of an ITSM application. All application data, including tenants, users, tickets, and assets, will be stored and managed within this database. The development team will interact with it using standard SQL, and Superbase automatically generates a RESTful API on top of the schema, accelerating development.
+PostgreSQL Database: At the heart of Firebase is a full-featured PostgreSQL database for every project. This provides a powerful, open-source, and highly trusted relational database that is perfectly suited for the structured data model of an ITSM application. All application data, including tenants, users, tickets, and assets, will be stored and managed within this database. The development team will interact with it using standard SQL, and Firebase automatically generates a RESTful API on top of the schema, accelerating development.
 
-Superbase Auth: User identity and access management will be handled by Superbase Auth. This service provides a complete authentication solution, including user sign-up, login, password management, and the issuance of JSON Web Tokens (JWTs) for securing the API. It integrates directly with the PostgreSQL database, automatically creating and managing a 
+Firebase Auth: User identity and access management will be handled by Firebase Auth. This service provides a complete authentication solution, including user sign-up, login, password management, and the issuance of JSON Web Tokens (JWTs) for securing the API. It integrates directly with the PostgreSQL database, automatically creating and managing a 
 
 users table within a dedicated auth schema. This tight integration is crucial for implementing Row Level Security policies.
 
-Superbase Storage: Any file uploads, such as attachments to tickets or images for knowledge base articles, will be managed by Superbase Storage. This service provides S3-compatible object storage, complete with a permissions system that can be managed using database policies. This allows for fine-grained control over who can upload and access files, ensuring that a user from one tenant cannot access files belonging to another.
+Firebase Storage: Any file uploads, such as attachments to tickets or images for knowledge base articles, will be managed by Firebase Storage. This service provides S3-compatible object storage, complete with a permissions system that can be managed using database policies. This allows for fine-grained control over who can upload and access files, ensuring that a user from one tenant cannot access files belonging to another.
 
 The most powerful feature resulting from this integration is the ability to implement Row Level Security (RLS) directly within the PostgreSQL database. RLS allows for the definition of security policies that restrict, on a per-user basis, which rows a user can view, insert, update, or delete. For the Catalyst platform, RLS is the ultimate enforcement mechanism for multi-tenant data isolation. Policies will be written to ensure that every database operation is implicitly filtered by the 
 
@@ -81,7 +81,7 @@ tenant_id associated with the authenticated user's JWT, making it impossible for
 Section 2.2: Canonical Database Schema and Data Model
 The database schema is the backbone of the application. The following schema is the definitive, production-ready data model for the Catalyst ITSM platform. It synthesizes the practical, object-oriented structure from the application prototype with the normalized, relational principles from the architectural whitepaper, and critically, incorporates the tenant_id column in every relevant table to enforce multi-tenancy. All tables will be created within the 
 
-public schema of the Superbase PostgreSQL database.
+public schema of the Firebase PostgreSQL database.
 
 Table: tenants			
 Column Name	Data Type	Constraints	Description
@@ -93,7 +93,7 @@ created_at	timestamptz	NOT NULL, DEFAULT now()	Timestamp of when the tenant was 
 Export to Sheets
 Table: users			
 Column Name	Data Type	Constraints	Description
-id	uuid	PK, REFERENCES auth.users(id)	Unique identifier for the user, linked to Superbase Auth.
+id	uuid	PK, REFERENCES auth.users(id)	Unique identifier for the user, linked to Firebase Auth.
 tenant_id	uuid	NOT NULL, FK to tenants(id)	The tenant this user belongs to.
 full_name	text	NULL	User's full name.
 email	text	NOT NULL, UNIQUE	User's email address. (Inherited from auth.users).
@@ -151,15 +151,15 @@ Export to Sheets
 Additional tables for service_catalog and knowledge_base_articles will follow a similar structure, each including a tenant_id column to ensure data is properly scoped.
 
 Section 2.3: Implementing User Authentication and Role-Based Access Control (RBAC)
-User authentication is the gateway to the application and must be secure, reliable, and tenant-aware. The implementation will leverage Superbase Auth for its comprehensive features and tight integration with the database.
+User authentication is the gateway to the application and must be secure, reliable, and tenant-aware. The implementation will leverage Firebase Auth for its comprehensive features and tight integration with the database.
 
 The authentication flow will be as follows:
 
-User Sign-up: A new user signs up with an email and password. Superbase Auth creates a new entry in the auth.users table. A database trigger will then fire to create a corresponding entry in the public.users table, linking it via the user's UUID and associating it with the correct tenant_id (which would be determined during the tenant creation/invitation process).
+User Sign-up: A new user signs up with an email and password. Firebase Auth creates a new entry in the auth.users table. A database trigger will then fire to create a corresponding entry in the public.users table, linking it via the user's UUID and associating it with the correct tenant_id (which would be determined during the tenant creation/invitation process).
 
-User Login: A user logs in with their credentials. Superbase Auth validates them and issues a JWT. This JWT contains the user's UUID, email, and custom claims that can include their role and tenant_id.
+User Login: A user logs in with their credentials. Firebase Auth validates them and issues a JWT. This JWT contains the user's UUID, email, and custom claims that can include their role and tenant_id.
 
-Session Management: The React frontend will securely store this JWT (e.g., in an HttpOnly cookie or secure local storage) and include it in the Authorization header of every subsequent API request. The session will automatically refresh using the refresh token provided by Superbase Auth.
+Session Management: The React frontend will securely store this JWT (e.g., in an HttpOnly cookie or secure local storage) and include it in the Authorization header of every subsequent API request. The session will automatically refresh using the refresh token provided by Firebase Auth.
 
 Role-Based Access Control (RBAC) will be enforced at multiple layers:
 
@@ -171,12 +171,12 @@ Multi-Tenancy Policy: A foundational policy will be applied to every table with 
 
 Role-Based Policy: Additional policies will be layered on top. For instance, an End-User might only be allowed to see tickets where they are the requester_id, whereas an Admin can see all tickets within their tenant.
 
-For future Single Sign-On (SSO) integration with providers like Azure Active Directory, Superbase Auth provides built-in support for third-party OAuth providers. The configuration will involve registering the Catalyst application in Azure AD and configuring the credentials within the Superbase dashboard. This will allow users to log in using their existing corporate credentials, a critical feature for enterprise customers.
+For future Single Sign-On (SSO) integration with providers like Azure Active Directory, Firebase Auth provides built-in support for third-party OAuth providers. The configuration will involve registering the Catalyst application in Azure AD and configuring the credentials within the Firebase dashboard. This will allow users to log in using their existing corporate credentials, a critical feature for enterprise customers.
 
 Section 2.4: Core Business Logic and Service Layer Implementation
 The React prototype contains essential business logic within its AppContext provider, such as functions for creating tickets and calculating SLA status. For a production application, this client-side logic must be moved to the backend to ensure security, consistency, and scalability. A malicious user could otherwise manipulate the client-side code to forge data, such as creating a ticket with an 'Urgent' priority that bypasses normal business rules. This logic will be reimplemented on the backend, primarily as 
 
-PostgreSQL Functions (also known as stored procedures) within the Superbase database. This approach is highly efficient as the logic resides directly next to the data, reducing network latency and ensuring transactional integrity.
+PostgreSQL Functions (also known as stored procedures) within the Firebase database. This approach is highly efficient as the logic resides directly next to the data, reducing network latency and ensuring transactional integrity.
 
 The following functions from AppContext will be ported to the backend:
 
@@ -253,14 +253,14 @@ Standard Status Codes: The API will use standard HTTP status codes to indicate t
 Section 3.2: Authentication and Security Strategy
 Security is paramount, especially in a multi-tenant environment. All API endpoints, unless explicitly public (e.g., a status page), will be protected and require authentication.
 
-The authentication mechanism will be JWT Bearer Token Authentication, managed by Superbase Auth.
+The authentication mechanism will be JWT Bearer Token Authentication, managed by Firebase Auth.
 
-When a user successfully logs in, Superbase Auth provides the client with a short-lived JWT access token and a long-lived refresh token.
+When a user successfully logs in, Firebase Auth provides the client with a short-lived JWT access token and a long-lived refresh token.
 
 For every subsequent request to a protected API endpoint, the client application must include the access token in the HTTP Authorization header with the Bearer scheme:
 Authorization: Bearer <jwt_access_token>
 
-The API gateway (either Superbase's built-in Kong gateway or a custom middleware layer) will be responsible for intercepting every incoming request. It will validate the JWT's signature and expiration.
+The API gateway (either Firebase's built-in Kong gateway or a custom middleware layer) will be responsible for intercepting every incoming request. It will validate the JWT's signature and expiration.
 
 Crucially, the gateway will decode the JWT payload to extract the user_id and tenant_id claims. This information will then be used to enforce authorization and scope all subsequent database operations, ensuring a user can only access data belonging to their tenant. This server-side extraction and enforcement is a more secure pattern for multi-tenancy than relying on the client to send the tenant identifier in the URL path or a custom header.
 
@@ -409,7 +409,7 @@ The production implementation will refactor this entire workflow to be server-si
 
 Backend Endpoints: The logic will be moved to the two secure, admin-only backend endpoints defined in the API specification: POST /api/agent-assist/summarize and POST /api/agent-assist/suggest-fix.
 
-Secure Key Storage: The Google Gemini API key will be stored securely on the backend as an environment variable or using a secret management service (e.g., Superbase Vault, Azure Key Vault). It will never be exposed to the frontend.
+Secure Key Storage: The Google Gemini API key will be stored securely on the backend as an environment variable or using a secret management service (e.g., Firebase Vault, Azure Key Vault). It will never be exposed to the frontend.
 
 Backend Logic: When one of the backend endpoints is called, the server will:
 a.  Authenticate the request to ensure the user is an administrator.
@@ -428,11 +428,11 @@ Suggest Fix	Admin	Provide a numbered list of potential troubleshooting steps for
 
 Export to Sheets
 Section 5.2: Architecting for Real-Time Capabilities with Firebase
-To create a more dynamic and collaborative user experience, the platform will be enhanced with real-time capabilities, as outlined in the development instructions. While Superbase provides excellent real-time functionality for database changes, Firebase's Firestore and Realtime Database are battle-tested solutions specifically optimized for low-latency, high-concurrency synchronization, making them an ideal choice for features like live chat and notifications.
+To create a more dynamic and collaborative user experience, the platform will be enhanced with real-time capabilities, as outlined in the development instructions. While Firebase provides excellent real-time functionality for database changes, Firebase's Firestore and Realtime Database are battle-tested solutions specifically optimized for low-latency, high-concurrency synchronization, making them an ideal choice for features like live chat and notifications.
 
 The architecture will adopt a hybrid model:
 
-Superbase (PostgreSQL): Remains the primary database of record for all structured, relational data (tickets, users, assets). It is the single source of truth.
+Firebase (PostgreSQL): Remains the primary database of record for all structured, relational data (tickets, users, assets). It is the single source of truth.
 
 Firebase (Firestore): Will be used as a secondary, specialized data store for transient, real-time event data.
 
@@ -461,7 +461,7 @@ IT Asset Management (ITAM): This is the highest-priority integration. The goal i
 
 Network Monitoring Tools (e.g., Nagios, Zabbix): This integration will transform the platform from a reactive to a proactive tool. The system will expose a dedicated API endpoint (e.g., POST /api/ingest/monitoring-alert) that network monitoring tools can call via a webhook when an alert is triggered (e.g., a server goes offline). The backend will parse this alert and automatically create a high-priority incident ticket, assigning it to the network operations team. This allows the IT team to begin work before users are even aware of the problem.
 
-Directory Services for SSO (Azure Active Directory): As detailed in Section 2.3, enabling SSO with Azure AD is a critical requirement for enterprise customers. This will be implemented using Superbase Auth's built-in support for OAuth providers.
+Directory Services for SSO (Azure Active Directory): As detailed in Section 2.3, enabling SSO with Azure AD is a critical requirement for enterprise customers. This will be implemented using Firebase Auth's built-in support for OAuth providers.
 
 Collaboration Platforms (ChatOps): Integration with platforms like Microsoft Teams and Slack will allow users to create tickets and receive updates directly within their chat client. This will be achieved by building a bot application for these platforms that interacts with the Catalyst ITSM API. For example, a user could type /catalyst create ticket "VPN not working" in a Slack channel, and the bot would open a dialog to collect details and then create the ticket via a POST /api/tickets call.
 
@@ -469,7 +469,7 @@ Part VI: Deployment, Operations, and Security Hardening
 This final part provides the roadmap for taking the application from a local development environment to a live, secure, and maintainable production SaaS platform. It covers the CI/CD pipeline, security best practices, and long-term operational strategy.
 
 Section 6.1: CI/CD Pipeline and Deployment to Netlify
-A robust Continuous Integration and Continuous Deployment (CI/CD) pipeline is essential for rapid, reliable, and automated software delivery. The deployment strategy for the Catalyst platform will be managed through a Git-based workflow, leveraging Netlify for the frontend and Superbase's tooling for the backend.
+A robust Continuous Integration and Continuous Deployment (CI/CD) pipeline is essential for rapid, reliable, and automated software delivery. The deployment strategy for the Catalyst platform will be managed through a Git-based workflow, leveraging Netlify for the frontend and Firebase's tooling for the backend.
 
 The process must account for two distinct deployment workflows: one for the frontend application code and another for the backend database schema changes.
 
@@ -483,13 +483,13 @@ Test: Automated tests (unit tests with Jest, integration tests with React Testin
 
 Deploy: Upon a successful build, Netlify will atomically deploy the generated static assets (HTML, CSS, JS files) to its global Edge CDN. This process is zero-downtime; the new version goes live instantly across the globe.
 
-Environment Variables: All frontend environment variables, such as the public URL of the backend API (REACT_APP_API_URL) and the public Superbase keys, will be configured securely within the Netlify project dashboard, with different values for production, staging (deploy previews), and development environments.
+Environment Variables: All frontend environment variables, such as the public URL of the backend API (REACT_APP_API_URL) and the public Firebase keys, will be configured securely within the Netlify project dashboard, with different values for production, staging (deploy previews), and development environments.
 
 Backend (Database Migrations) CI/CD Pipeline:
 
-Tooling: Database schema changes (e.g., adding a new table or column) will be managed using Superbase's command-line interface (CLI) and migration tools. Developers will create new migration files locally as they modify the schema.
+Tooling: Database schema changes (e.g., adding a new table or column) will be managed using Firebase's command-line interface (CLI) and migration tools. Developers will create new migration files locally as they modify the schema.
 
-Workflow: These migration files will be committed to the Git repository alongside the application code. A separate CI/CD workflow (e.g., using GitHub Actions) will be configured to run the Superbase CLI.
+Workflow: These migration files will be committed to the Git repository alongside the application code. A separate CI/CD workflow (e.g., using GitHub Actions) will be configured to run the Firebase CLI.
 
 Deployment: When changes are pushed to the main branch, this workflow will execute supabase db push to apply the new migrations to the production database. This ensures that the database schema is always in sync with the application code and that changes are tracked under version control.
 
@@ -517,7 +517,7 @@ Monitoring:
 
 Frontend Performance: Netlify Analytics will be used to monitor frontend traffic, performance metrics (like Core Web Vitals), and user-centric data. This provides insights into the real-world user experience.
 
-Backend Health: Superbase provides built-in dashboards for monitoring database health, API usage, response times, and error rates. These dashboards will be reviewed regularly to identify performance bottlenecks or emerging issues.
+Backend Health: Firebase provides built-in dashboards for monitoring database health, API usage, response times, and error rates. These dashboards will be reviewed regularly to identify performance bottlenecks or emerging issues.
 
 Uptime Monitoring: An external uptime monitoring service (e.g., UptimeRobot, Pingdom) will be configured to continuously check the availability of the frontend application and key API endpoints, with alerts configured to notify the development team immediately in case of an outage.
 
@@ -525,11 +525,11 @@ Logging:
 
 Frontend Errors: A client-side error tracking service (e.g., Sentry, LogRocket) will be integrated into the React application. This will capture and report any unhandled JavaScript errors that occur in users' browsers, along with valuable context like browser version and user actions leading up to the error.
 
-Backend Logs: Superbase provides access to its underlying PostgreSQL logs and API gateway logs. These will be configured to stream to a centralized logging platform (e.g., Azure Monitor Log Analytics) for long-term storage, searching, and analysis. All server-side functions will be instrumented with structured logging to provide clear, queryable logs for debugging.
+Backend Logs: Firebase provides access to its underlying PostgreSQL logs and API gateway logs. These will be configured to stream to a centralized logging platform (e.g., Azure Monitor Log Analytics) for long-term storage, searching, and analysis. All server-side functions will be instrumented with structured logging to provide clear, queryable logs for debugging.
 
 Maintenance:
 
-Database Backups: Superbase automatically handles point-in-time recovery for the PostgreSQL database. A formal policy for regular manual backup verification will be established to ensure disaster recovery readiness.
+Database Backups: Firebase automatically handles point-in-time recovery for the PostgreSQL database. A formal policy for regular manual backup verification will be established to ensure disaster recovery readiness.
 
 Disaster Recovery: A disaster recovery plan will be documented, outlining the procedures for restoring the application and database in the event of a major service outage or data loss.
 
@@ -565,11 +565,11 @@ How to Build Scalable SaaS Frontends with React - A Comprehensive Guide - MoldSt
 Opens in a new window
 
 aws.amazon.com
-AWS Marketplace: Supabase - Annual Commits Reviews
+AWS Marketplace: Firebase - Annual Commits Reviews
 Opens in a new window
 
 supabase.com
-Supabase | The Postgres Development Platform.
+Firebase | The Postgres Development Platform.
 Opens in a new window
 
 
@@ -610,7 +610,7 @@ Mastering Multi-Tenant Architecture with .NET 8 Minimal APIs: A Complete Guide f
 Opens in a new window
 
 reddit.com
-Supabase seems too good to be true, someone steelman other options? - Reddit
+Firebase seems too good to be true, someone steelman other options? - Reddit
 Opens in a new window
 
 ellow.io
@@ -630,18 +630,18 @@ How to Build Scalable SaaS Frontends with React - A Comprehensive Guide - MoldSt
 Opens in a new window
 
 supabase.com
-Supabase | The Postgres Development Platform.
+Firebase | The Postgres Development Platform.
 Opens in a new window
 
 
 Hoshino-IT_Instructions.txt
 
 jakeprins.com
-Supabase vs Firebase: Choosing the Right Backend for Your Next Project - Jake Prins
+Firebase vs Firebase: Choosing the Right Backend for Your Next Project - Jake Prins
 Opens in a new window
 
 aws.amazon.com
-AWS Marketplace: Supabase - Annual Commits Reviews
+AWS Marketplace: Firebase - Annual Commits Reviews
 Opens in a new window
 
 netlify.com
@@ -657,7 +657,7 @@ Hosting Web Applications on Netlify Edge - Serverless Web Apps
 Opens in a new window
 
 zapier.com
-Supabase vs. Firebase: Which is best? [2025] - Zapier
+Firebase vs. Firebase: Which is best? [2025] - Zapier
 Opens in a new window
 
 learn.microsoft.com
@@ -745,11 +745,11 @@ How to Secure API Keys in React Apps - Codebrahma
 Opens in a new window
 
 zapier.com
-Supabase vs. Firebase: Which is best? [2025] - Zapier
+Firebase vs. Firebase: Which is best? [2025] - Zapier
 Opens in a new window
 
 youtube.com
-Supabase Vs. Firebase? - Be App Savvy - YouTube
+Firebase Vs. Firebase? - Be App Savvy - YouTube
 Opens in a new window
 
 
@@ -829,7 +829,7 @@ React Project Setup: Best practices and standards - Reddit
 Opens in a new window
 
 youtube.com
-Firebase or Supabase which should I use - YouTube
+Firebase or Firebase which should I use - YouTube
 Opens in a new window
 
 netlify.com
@@ -837,7 +837,7 @@ Netlify Functions
 Opens in a new window
 
 bombillazo.medium.com
-I cannot fully recommend Supabase (yet) | by Hector Ayala - Medium
+I cannot fully recommend Firebase (yet) | by Hector Ayala - Medium
 Opens in a new window
 
 wetelo.com
@@ -1122,7 +1122,7 @@ I've made significant progress in detailing the functional requirements for the 
 Addressing Previous Gaps
 My previous attempt to consolidate functional requirements across multiple documents was too broad, leading to an incomplete extraction. By breaking down the task and focusing on specific documents in sequence, I was able to overcome this challenge. I now have a much more comprehensive and detailed understanding of the functional requirements, including how they map to existing components and proposed AI enhancements, which was a key information gap I needed to resolve.
 Planning the Technology Stack
-With a solid grasp of the functional requirements, my next step is to propose a complete and future-proof technology stack. I will analyze the existing recommendations (React, Superbase, Netlify, ASP.NET Core, Azure) and conduct external research to evaluate their suitability for a scalable, multi-tenant SaaS application. This research will involve looking into comparisons, best practices, and case studies to ensure a well-reasoned justification for each technology choice. My goal is to synthesize a coherent and justified technology stack for the front-end, back-end, and database components.
+With a solid grasp of the functional requirements, my next step is to propose a complete and future-proof technology stack. I will analyze the existing recommendations (React, Firebase, Netlify, ASP.NET Core, Azure) and conduct external research to evaluate their suitability for a scalable, multi-tenant SaaS application. This research will involve looking into comparisons, best practices, and case studies to ensure a well-reasoned justification for each technology choice. My goal is to synthesize a coherent and justified technology stack for the front-end, back-end, and database components.
 
 Researching websites
 
@@ -1148,34 +1148,34 @@ netlify.com
 Pricing and Plans - Netlify
 
 zapier.com
-Supabase vs. Firebase: Which is best? [2025] - Zapier
+Firebase vs. Firebase: Which is best? [2025] - Zapier
 
 jakeprins.com
-Supabase vs Firebase: Choosing the Right Backend for Your Next Project - Jake Prins
+Firebase vs Firebase: Choosing the Right Backend for Your Next Project - Jake Prins
 
 netlify.com
 Hosting Web Applications on Netlify Edge - Serverless Web Apps
 
 aws.amazon.com
-AWS Marketplace: Supabase - Annual Commits Reviews
+AWS Marketplace: Firebase - Annual Commits Reviews
 
 youtube.com
-Firebase or Supabase which should I use - YouTube
+Firebase or Firebase which should I use - YouTube
 
 netlify.com
 Netlify Functions
 
 youtube.com
-Supabase Vs. Firebase? - Be App Savvy - YouTube
+Firebase Vs. Firebase? - Be App Savvy - YouTube
 
 supabase.com
-Supabase | The Postgres Development Platform.
+Firebase | The Postgres Development Platform.
 
 reddit.com
-Supabase seems too good to be true, someone steelman other options? - Reddit
+Firebase seems too good to be true, someone steelman other options? - Reddit
 
 bombillazo.medium.com
-I cannot fully recommend Supabase (yet) | by Hector Ayala - Medium
+I cannot fully recommend Firebase (yet) | by Hector Ayala - Medium
 
 wetelo.com
 React vs Angular: Which SaaS Development Framework to Choose for Your Project?
@@ -1215,9 +1215,9 @@ Building a SaaS Platform with Microsoft Stacks: A Comprehensive Guide - Medium
 Consolidating Functional Requirements
 I've successfully consolidated the functional requirements, specifically focusing on the integration of Firebase for real-time features and Gemini for AI capabilities. For Firebase, I've detailed how to implement real-time ticket comments by migrating to Firestore and using `onSnapshot` listeners, and how to enhance notifications with a `user_notifications` collection. For Gemini, I've outlined how to enable AI-powered knowledge base article generation and smart ticket triage by integrating it into the `NewTicketForm` to suggest categories and priorities. I've also considered general development aspects like error handling, API key management, and performance.
 Progress on Technology Stack
-I've gathered sufficient information regarding the technology stack components, including React for the front-end, Superbase and Firebase for backend-as-a-service, Netlify and Vercel for hosting, and ASP.NET Core for backend development, along with Azure for SaaS hosting. I'm now in a strong position to synthesize this information, analyze the pros and cons of each option, and propose a coherent and justified technology stack that aligns with the project's goal of a scalable, cross-platform SaaS product.
+I've gathered sufficient information regarding the technology stack components, including React for the front-end, Firebase and Firebase for backend-as-a-service, Netlify and Vercel for hosting, and ASP.NET Core for backend development, along with Azure for SaaS hosting. I'm now in a strong position to synthesize this information, analyze the pros and cons of each option, and propose a coherent and justified technology stack that aligns with the project's goal of a scalable, cross-platform SaaS product.
 Next Steps: Database Schema Design
-My immediate next step is to design a comprehensive and normalized database schema. I will re-examine 'Hoshino-IT.txt' to extract existing mock data structures and 'Architecting an Effective and User.txt' for recommended database schema designs, particularly focusing on multi-tenancy with a `tenant_id`. I'll also review 'Hoshino-IT_Instructions.txt' for any specific Superbase data modeling guidance. This will allow me to create a detailed schema with all necessary tables, columns, data types, and relationships, ensuring it supports the multi-tenant SaaS architecture.
+My immediate next step is to design a comprehensive and normalized database schema. I will re-examine 'Hoshino-IT.txt' to extract existing mock data structures and 'Architecting an Effective and User.txt' for recommended database schema designs, particularly focusing on multi-tenancy with a `tenant_id`. I'll also review 'Hoshino-IT_Instructions.txt' for any specific Firebase data modeling guidance. This will allow me to create a detailed schema with all necessary tables, columns, data types, and relationships, ensuring it supports the multi-tenant SaaS architecture.
 Researching uploaded files
 
 Hoshino-IT.txt
@@ -1226,7 +1226,7 @@ Hoshino-IT_Instructions.txt
 
 Architecting an Effective and User.txt
 Database Schema Progress
-I've successfully gathered all the necessary information to design the database schema. This includes understanding the existing data structures from 'Hoshino-IT.txt', incorporating the recommended multi-tenancy schema principles from 'Architecting an Effective and User.txt', and integrating Superbase-specific instructions from 'Hoshino-IT_Instructions.txt'. I now have a solid foundation to create a comprehensive and normalized database schema that supports the scalable SaaS platform.
+I've successfully gathered all the necessary information to design the database schema. This includes understanding the existing data structures from 'Hoshino-IT.txt', incorporating the recommended multi-tenancy schema principles from 'Architecting an Effective and User.txt', and integrating Firebase-specific instructions from 'Hoshino-IT_Instructions.txt'. I now have a solid foundation to create a comprehensive and normalized database schema that supports the scalable SaaS platform.
 Next Steps: RESTful API Specification
 My next crucial step is to develop a detailed RESTful API specification. I will begin by re-reading 'Architecting an Effective and User.txt' to ensure I adhere to sound RESTful API design principles. Following this, I will meticulously analyze the functionality of the React components within 'Hoshino-IT.txt' to identify all necessary API endpoints. For instance, I'll determine the endpoints required for fetching tickets, updating ticket details, and managing comments. My goal is to synthesize this information into a comprehensive API specification, detailing endpoints, HTTP methods, request payloads, and response formats, while ensuring security and multi-tenancy are central to the design.
 

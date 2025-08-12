@@ -1,8 +1,8 @@
 # Catalyst ITSM – End‑to‑End Deployment Guide (Unified, Expanded)
 
-> This master runbook unifies the **Full Build Guide**, **Gemini/Supabase instructions**, and **Small‑Business/ITIL deployment notes** into one exhaustive, opinionated path from zero → production. It includes two delivery tracks and a migration bridge between them, plus IaC stubs, environment matrices, SSO/email/search/workflow wiring, observability/SLOs, cost controls, runbooks, audit & compliance, and rollback.
+> This master runbook unifies the **Full Build Guide**, **Gemini/Firebase instructions**, and **Small‑Business/ITIL deployment notes** into one exhaustive, opinionated path from zero → production. It includes two delivery tracks and a migration bridge between them, plus IaC stubs, environment matrices, SSO/email/search/workflow wiring, observability/SLOs, cost controls, runbooks, audit & compliance, and rollback.
 >
-> **Track A (MVP Fast‑Track)** — *Supabase + Netlify* (quickest to value)
+> **Track A (MVP Fast‑Track)** — *Firebase + Netlify* (quickest to value)
 >
 > **Track B (Production SaaS on Azure)** — App Service (or AKS) + PostgreSQL + Redis + Service Bus + Blob + Cognitive Search + Entra ID + Temporal
 >
@@ -41,11 +41,11 @@
 ## 1) Prerequisites & Access (All Tracks)
 
 - **Domains/DNS** provider access (TXT for SSO domain verification, CNAME/ALIAS for web/api).
-- **Cloud**: Azure subscription (Owner or Contributor + User Access Admin), Netlify + Supabase orgs for Track A.
+- **Cloud**: Azure subscription (Owner or Contributor + User Access Admin), Netlify + Firebase orgs for Track A.
 - **SSO**: Entra ID admin rights to create two app registrations (SPA/Web + API) and assign group claims.
 - **Email**: Microsoft 365 tenant mailbox (e.g., `helpdesk@yourco.com`), ability to grant Graph permissions.
-- **Secrets**: Azure Key Vault (Track B) or Netlify/Supabase env managers (Track A).
-- **CI**: GitHub org with OIDC trust to Azure subscription (Track B) and to Netlify/Supabase (Track A).
+- **Secrets**: Azure Key Vault (Track B) or Netlify/Firebase env managers (Track A).
+- **CI**: GitHub org with OIDC trust to Azure subscription (Track B) and to Netlify/Firebase (Track A).
 
 > Tip: Create a shared *Deployment Owners* group; only members can approve prod deploys and rotate secrets.
 
@@ -57,27 +57,27 @@
 | ---------------------------------- | ------------ | --- | ------ | ----------------------------- | ------------------------------------------------------ |
 | `NEXT_PUBLIC_API_URL`              | ✅            | —   | —      | `https://api.stg.yourco.com/` | Origin of API per env                                  |
 | `NEXT_PUBLIC_APP_ENV`              | ✅            | —   | —      | `staging`                     | Feature flags & logging                                |
-| `DATABASE_URL`                     | —            | ✅   | —      | —                             | Postgres (Track B) or Supabase DSN (Track A)           |
+| `DATABASE_URL`                     | —            | ✅   | —      | —                             | Postgres (Track B) or Firebase DSN (Track A)           |
 | `REDIS_URL`                        | —            | ✅   | —      | —                             | Azure Cache for Redis (Track B)                        |
 | `BLOB_CONN` / `BLOB_SAS_*`         | —            | ✅   | —      | —                             | Storage connection or SAS credentials                  |
 | `SEARCH_ENDPOINT`/`SEARCH_KEY`     | —            | ✅   | —      | —                             | Azure Cognitive Search                                 |
 | `SERVICE_BUS_CONNECTION`           | —            | ✅   | —      | —                             | Domain events (Track B)                                |
 | `TEMPORAL_ADDRESS`                 | —            | ✅   | ✅      | `localhost:7233`              | Temporal server endpoint                               |
 | `JWT_SECRET`                       | —            | ✅   | —      | —                             | Only if API mints proprietary tokens                   |
-| `OIDC_ISSUER`/`CLIENT_ID`/`SECRET` | ✅            | ✅   | —      | —                             | Entra ID (Track B) or Supabase provider keys (Track A) |
+| `OIDC_ISSUER`/`CLIENT_ID`/`SECRET` | ✅            | ✅   | —      | —                             | Entra ID (Track B) or Firebase provider keys (Track A) |
 | `EMAIL_PROVIDER` + creds           | —            | ✅   | —      | `graph`                       | SMTP/SendGrid/Graph                                    |
 | `WEB_BASE_URL`                     | ✅            | ✅   | —      | `https://app.stg.yourco.com`  | Deep links in emails                                   |
 | `FILE_MAX_MB`                      | ✅            | ✅   | —      | `25`                          | Shared upload size limit                               |
 
-> Store secrets in **Key Vault** (Track B) or Netlify/Supabase config stores (Track A). Rotate at least quarterly or on personnel change.
+> Store secrets in **Key Vault** (Track B) or Netlify/Firebase config stores (Track A). Rotate at least quarterly or on personnel change.
 
 ---
 
-## 3) Track A — MVP Fast‑Track (Supabase + Netlify)
+## 3) Track A — MVP Fast‑Track (Firebase + Netlify)
 
 ### 3.1 Provisioning Steps
 
-1. **Create Supabase project** `catalyst-<env>`:
+1. **Create Firebase project** `catalyst-<env>`:
    - Enable Auth (email/password). Add Azure AD provider when ready; map groups → roles.
    - Create storage buckets: `attachments`, `avatars`; set public read off; enable signed URLs.
    - Apply SQL schema for: `tenants`, `users`, `tickets`, `ticket_comments`, `ticket_attachments`, `service_categories`, `service_items`, `kb_articles`, `approvals`, `business_hours`, `sla_policies`.
@@ -87,9 +87,9 @@
    - Connect monorepo; create two sites: `portal` and `agent` (or single site with routes).
    - Build cmd per app: `pnpm i --frozen-lockfile && pnpm --filter @catalyst/portal build`.
    - Publish dir: `.next` (SSR) or `out` (static export).
-   - Set env vars: `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_APP_ENV`, Supabase public anon key.
+   - Set env vars: `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_APP_ENV`, Firebase public anon key.
 3. **API** options:
-   - **Option A:** use Supabase generated REST + RPC with RLS. Add a thin Netlify Function gateway for validation, idempotency, audit, and webhooks.
+   - **Option A:** use Firebase generated REST + RPC with RLS. Add a thin Netlify Function gateway for validation, idempotency, audit, and webhooks.
    - **Option B:** deploy the Node API (from scaffold) as Netlify Functions—keeps parity with Track B contracts.
 
 ### 3.2 Security Defaults
@@ -112,7 +112,7 @@
 
 ### 3.5 Observability
 
-- Netlify analytics for traffic; Supabase logs and metrics. Add client OTEL web exporter to emit basic traces to a collector (or Sentry if preferred).
+- Netlify analytics for traffic; Firebase logs and metrics. Add client OTEL web exporter to emit basic traces to a collector (or Sentry if preferred).
 
 ### 3.6 Seed & Smoke
 
@@ -309,17 +309,17 @@ Provide `plan → apply` pipelines with OIDC to Azure; state in Azure Storage wi
 
 ### 10.1 Data Export
 
-- Export from Supabase: `pg_dump` with schema + data for tenant tables; exclude auth schema if moving to Entra.
+- Export from Firebase: `pg_dump` with schema + data for tenant tables; exclude auth schema if moving to Entra.
 - Transform: ensure enum compatibility and `uuid` types.
 - Import: `psql` into Azure Postgres; run post‑import validation (counts/hashes).
 
 ### 10.2 Auth Swap
 
-- Disable Supabase Auth; enforce Entra ID SSO; map groups → roles; issue tenant‑scoped tokens from API.
+- Disable Firebase Auth; enforce Entra ID SSO; map groups → roles; issue tenant‑scoped tokens from API.
 
 ### 10.3 Files & Search
 
-- Migrate attachments from Supabase Storage to Azure Blob via azcopy; keep original paths when possible.
+- Migrate attachments from Firebase Storage to Azure Blob via azcopy; keep original paths when possible.
 - Rebuild Cognitive Search indexes; rehydrate from DB + blobs.
 
 ### 10.4 DNS Cutover
@@ -384,7 +384,7 @@ Provide `plan → apply` pipelines with OIDC to Azure; state in Azure Storage wi
 
 ## 17) Appendices
 
-### Appendix A — Supabase SQL RLS Starters
+### Appendix A — Firebase SQL RLS Starters
 
 ```sql
 -- Tenancy isolation

@@ -7,7 +7,7 @@
 ## 0) TL;DR for Engineering Leads
 
 - **Primary stack (Production SaaS)**: **React 19 + Next.js 15** (App Router), **TypeScript**, **Tailwind + shadcn/ui**, **React Hook Form + Zod**, **TanStack Query**, **NestJS (Node 22) + Fastify**, **OpenAPI 3.1**, **PostgreSQL 16** (RLS multi‑tenant), **Prisma ORM**, **Redis** (cache + rate limit + pub/sub), **Azure Service Bus** (events/queues), **Temporal** (workflows), **Azure Blob Storage** (attachments), **Azure Cognitive Search** (tickets + KB), **Azure Entra ID (OIDC)**, **Azure Monitor + App Insights + OpenTelemetry**, **Playwright** (E2E), **Vitest** (unit), **k6** (perf), **GitHub Actions** (CI/CD), **Turborepo + pnpm** (monorepo), **ESLint/Prettier/Husky**.
-- **MVP fast‑track**: React frontend + **Supabase** (auth/DB/storage/RLS) + **Edge Functions**; optional **Firebase** (Realtime notifications); **Vercel/Netlify** (hosting). Migration plan to Production SaaS included.
+- **MVP fast‑track**: React frontend + **Firebase** (auth/DB/storage/security rules) + **Cloud Functions**; **Vercel/Netlify** (hosting). Migration plan to Production SaaS included.
 - **Core principle**: *Hard split* between **Incidents** ("something broke") and **Service Requests** ("I need something"). Separate forms, workflows, SLAs, routing, analytics.
 - **Tenancy**: single DB, **Row‑Level Security** by `tenant_id`, enforced in DB **and** service layer. Optional schema‑per‑tenant for large customers.
 - **Security**: OIDC SSO, short‑lived JWTs with tenant scopes, RBAC + ABAC, field‑level audit, secrets in Key Vault, CIS baselines.
@@ -488,9 +488,9 @@ resource "azurerm_postgresql_flexible_server" "db" {
 
 ---
 
-## 21) MVP Fast‑Track (Supabase/Netlify Option)
-- Replace API with Supabase SQL + RLPs; Edge Functions for business rules; storage for attachments; optional Firebase for realtime.
-- Keep React apps; swap SDK to Supabase; gate advanced workflows.
+## 21) MVP Fast‑Track (Firebase/Netlify Option)
+- Replace API with Firebase SQL + RLPs; Edge Functions for business rules; storage for attachments; optional Firebase for realtime.
+- Keep React apps; swap SDK to Firebase; gate advanced workflows.
 - Migration to Prod SaaS: export schema/data → Postgres; replace auth with Entra; re‑point storage; re‑index search.
 
 ---

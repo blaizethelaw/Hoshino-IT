@@ -1,4 +1,6 @@
 import React, { useState, useEffect, createContext, useContext, useCallback, useMemo } from 'react';
+import { collection, getDocs, addDoc } from 'firebase/firestore';
+import { db } from './firebase';
 import { BarChart, Bar, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { 
   Search, Bell, User, ChevronDown, FileText, Settings, BarChart2, LifeBuoy, LogOut, 
@@ -67,12 +69,31 @@ const AppContext = createContext();
 
 const AppProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(USERS['user-2']);
-  const [tickets, setTickets] = useState(initialTickets);
+  const [tickets, setTickets] = useState([]);
   const [activeView, setActiveView] = useState('dashboard');
   const [selectedTicketId, setSelectedTicketId] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const loadTickets = async () => {
+      try {
+        const snapshot = await getDocs(collection(db, 'tickets'));
+        if (!snapshot.empty) {
+          const ticketData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          setTickets(ticketData);
+        } else {
+          setTickets(initialTickets);
+        }
+      } catch (err) {
+        console.error('Failed to load tickets', err);
+        setTickets(initialTickets);
+      }
+    };
+    loadTickets();
+  }, []);
+
 
   const addNotification = useCallback((type, message) => {
     const id = Date.now();
@@ -92,7 +113,7 @@ const AppProvider = ({ children }) => {
     return 'On Track';
   }, []);
 
-  const createTicket = useCallback((newTicketData) => {
+  const createTicket = useCallback(async (newTicketData) => {
     let agentId = null;
     if (newTicketData.category.toLowerCase().includes('network') || newTicketData.category.toLowerCase().includes('vpn')) {
       agentId = 'user-2';
@@ -100,7 +121,6 @@ const AppProvider = ({ children }) => {
     }
 
     const newTicket = {
-      id: tickets.length + 1,
       ...newTicketData,
       requesterId: currentUser.id,
       agentId: agentId,
@@ -110,11 +130,12 @@ const AppProvider = ({ children }) => {
       slaDeadline: new Date(Date.now() + SLA_CONFIG[newTicketData.priority].resolution * 60 * 60 * 1000).toISOString(),
       comments: [],
     };
-    setTickets(prevTickets => [newTicket, ...prevTickets]);
-    addNotification('success', `Ticket #${newTicket.id} created`);
+    const docRef = await addDoc(collection(db, 'tickets'), newTicket);
+    setTickets(prevTickets => [{ id: docRef.id, ...newTicket }, ...prevTickets]);
+    addNotification('success', `Ticket #${docRef.id} created`);
     setActiveView('tickets');
-    setSelectedTicketId(newTicket.id);
-  }, [tickets, currentUser, addNotification]);
+    setSelectedTicketId(docRef.id);
+  }, [currentUser, addNotification]);
 
   const updateTicket = useCallback((ticketId, updates) => {
     setTickets(prevTickets =>
