@@ -11,7 +11,16 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-const app = initializeApp(firebaseConfig);
+let app;
 
-export const db = getFirestore(app);
-export const auth = getAuth(app);
+try {
+  if (!firebaseConfig.apiKey) {
+    throw new Error('Missing Firebase configuration.');
+  }
+  app = initializeApp(firebaseConfig);
+} catch (error) {
+  console.error('Firebase initialization error:', error);
+}
+
+export const db = app ? getFirestore(app) : null;
+export const auth = app ? getAuth(app) : null;
